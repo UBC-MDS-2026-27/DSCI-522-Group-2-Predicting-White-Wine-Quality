@@ -10,7 +10,8 @@
 
 ## Project Summary
 
-This project investigates whether the physicochemical properties of Portuguese white wines can be used to predict their sensory quality scores. Using the White Wine Quality dataset from the UCI Machine Learning Repository, we apply regression analysis to examine the relationship between chemical measurements, such as alcohol content, acidity, and residual sugar, and wine quality. Our findings suggest that **[briefly describe your main findings after completing the analysis]**. These results may help provide insight into which chemical properties are associated with higher wine quality, although chemical measurements alone may not fully explain subjective human preferences.
+This project investigates whether the physicochemical properties of Portuguese white wines can be used to predict their sensory quality scores. Using the White Wine Quality dataset from the UCI Machine Learning Repository, we apply regression analysis to examine the relationship between chemical measurements, such as alcohol content, acidity, and residual sugar, and wine quality. Our findings show that a Random Forest regression model achieved a Root Mean Squared Error (RMSE) of 0.591 and a Mean Absolute Error (MAE) of 0.419 on the held-out test data. This indicates that the model's predictions differed from the observed wine quality scores by approximately 0.419 points on average. These results suggest that physicochemical measurements can provide useful information for predicting wine quality, although chemical measurements alone may not fully explain subjective human preferences.
+
 
 ## How to Run the Analysis
 
@@ -56,12 +57,12 @@ quarto --version
 Render the Quarto document using:
 
 ```bash
-uv run quarto render analysis/white-wine-quality.qmd
+uv run quarto render reports/report.qmd
 ```
 
-The rendered HTML report will be generated in the analysis directory.
+The rendered HTML report will be generated in the report directory.
 
-Open `white-wine-quality.html` in your browser to view the analysis.
+Open `report.html` in your browser to view the report.
 
 ## Dependencies
 
@@ -121,4 +122,4 @@ No additional AI instruction files were used.
 
 View the rendered analysis here:
 
-[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/analysis/white-wine-quality.html)
+[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/reports/report.html)
