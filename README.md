@@ -4,13 +4,13 @@
 ## Authors
 
 - Ivan Tse
-- [Team Member 2]
-- [Team Member 3]
-- [Team Member 4]
+- Nidhi Danda
+- Yunjin Zhang (Alice)
+- Weizhuo Zhang (Nathan)
 
 ## Project Summary
 
-This project investigates whether the physicochemical properties of Portuguese white wines can be used to predict their sensory quality scores. Using the White Wine Quality dataset from the UCI Machine Learning Repository, we apply regression analysis to examine the relationship between chemical measurements, such as alcohol content, acidity, and residual sugar, and wine quality. Our findings suggest that [briefly describe your main findings after completing the analysis]. These results may help provide insight into which chemical properties are associated with higher wine quality, although chemical measurements alone may not fully explain subjective human preferences.
+This project investigates whether the physicochemical properties of Portuguese white wines can be used to predict their sensory quality scores. Using the White Wine Quality dataset from the UCI Machine Learning Repository, we apply regression analysis to examine the relationship between chemical measurements, such as alcohol content, acidity, and residual sugar, and wine quality. Our findings suggest that **[briefly describe your main findings after completing the analysis]**. These results may help provide insight into which chemical properties are associated with higher wine quality, although chemical measurements alone may not fully explain subjective human preferences.
 
 ## How to Run the Analysis
 
@@ -59,7 +59,7 @@ Render the Quarto document using:
 uv run quarto render white-wine-quality.qmd
 ```
 
-The rendered HTML report will be generated in the project directory.
+Make sure you're in the analysis directory before running the above command. The rendered HTML report will be generated in the analysis directory.
 
 Open `white-wine-quality.html` in your browser to view the analysis.
 
@@ -92,7 +92,7 @@ The dataset contains 4,898 white wine samples from the Vinho Verde region of Por
 This project uses the following licenses:
 
 - Project source code: [MIT License](LICENSE.md)
-- Dataset: [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE.md)
+- Project Report: [Creative Commons Attribution 4.0 International (CC BY-NC-ND 4.0)](LICENSE.md)
 
 See `LICENSE.md` for additional information.
 
