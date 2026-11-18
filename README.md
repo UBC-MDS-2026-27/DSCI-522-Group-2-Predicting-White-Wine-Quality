@@ -57,7 +57,7 @@ quarto --version
 Render the Quarto document using:
 
 ```bash
-uv run quarto render reports/report.qmd
+uv run quarto render reports/predicting-white-wine-quality-report.qmd
 ```
 
 The rendered HTML report will be generated in the report directory.
