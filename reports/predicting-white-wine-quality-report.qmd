@@ -1,0 +1,20 @@
+---
+title: "Predicting white wine quality from 11 physicochemical predictors"
+author: "Ivan Tse, Nathan Zhang, Nidhi Danda, Yunjin Zhang"
+date: "2026/11/18"
+jupyter: python3
+---
+
+# Summary
+
+# Introduction
+
+# Methods
+
+## Data
+
+## Analysis
+
+# Results & Discussion
+
+# References
