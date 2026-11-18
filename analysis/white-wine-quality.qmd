@@ -141,6 +141,17 @@ model_comparison = (
 )
 ```
 
+### Final model fitting
+
+Based on its lowest cross-validated RMSE and MAE, we selected the random forest model as the final model. We refit this model using all training observations and all 11 physicochemical predictors. The held-out test data were not used during this fitting step.
+
+```{python}
+#| output: false
+
+final_model = models["Random forest"]
+final_model.fit(X_train, y_train)
+```
+
 ## Results
 
 ### Training data overview
@@ -267,3 +278,4 @@ model_comparison
 Random forest achieved the best cross-validated predictive performance, with a mean RMSE of 0.626 and a mean MAE of 0.453. Both values were lower than those of linear regression (RMSE = 0.750; MAE = 0.586) and the mean baseline model (RMSE = 0.885; MAE = 0.671).
 
 The agreement between RMSE and MAE indicates that random forest both reduced average prediction error and avoided larger prediction errors more effectively than the other candidate models. The standard deviations were small across all folds, suggesting that the model comparisons were stable. We therefore selected random forest as the final model, pending review before evaluation on the held-out test data.
+
