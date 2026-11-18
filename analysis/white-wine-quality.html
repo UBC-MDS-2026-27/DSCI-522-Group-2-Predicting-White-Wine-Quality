@@ -147,7 +147,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="methods">Methods</h2>
 <section id="data-acquisition" class="level3">
 <h3 class="anchored" data-anchor-id="data-acquisition">Data acquisition</h3>
-<div id="d9c1ae50" class="cell" data-execution_count="1">
+<div id="2e574a27" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> BytesIO</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> zipfile <span class="im">import</span> ZipFile</span>
@@ -157,7 +157,7 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="84452232" class="cell" data-execution_count="2">
+<div id="58cf87af" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dataset_url <span class="op">=</span> <span class="st">"https://archive.ics.uci.edu/static/public/186/wine+quality.zip"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>raw_data_path <span class="op">=</span> Path(<span class="st">"../data/raw/winequality-white.csv"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -176,7 +176,7 @@ window.Quarto = {
 <section id="train-test-split" class="level3">
 <h3 class="anchored" data-anchor-id="train-test-split">Train-test split</h3>
 <p>We loaded the raw white wine data and split it into training and test sets before conducting exploratory data analysis or model fitting. We used a fixed random seed to make the split reproducible and stratified by quality score to preserve its distribution in both data sets.</p>
-<div id="10eb28d6" class="cell" data-execution_count="3">
+<div id="8b3978fb" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>wine_data <span class="op">=</span> pd.read_csv(raw_data_path, sep<span class="op">=</span><span class="st">";"</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>train_data, test_data <span class="op">=</span> train_test_split(</span>
@@ -209,11 +209,12 @@ Test observations: 980</code></pre>
 <h3 class="anchored" data-anchor-id="model-development-and-selection">Model development and selection</h3>
 <p>We used all 11 physicochemical measurements as predictor variables. We did not perform feature selection because the objective was prediction, and variables with weak individual linear correlations may still improve multivariable or non-linear models.</p>
 <p>We compared three regression approaches: a mean baseline model, a linear regression model, and a random forest regression model. The linear regression pipeline standardized predictor variables, whereas random forests do not require standardization. We used five-fold cross-validation on the training data to compare models using root mean squared error (RMSE), where lower values indicate better predictive performance. The test set was not used during model selection.</p>
-<div id="ad5eb06e" class="cell" data-execution_count="4">
+<p>RMSE was the primary model-selection metric because it places greater weight on large prediction errors. We additionally reported MAE because it provides an interpretable measure of average prediction error.</p>
+<div id="660d1239" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold, cross_val_score</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> KFold, cross_validate</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
@@ -244,28 +245,36 @@ Test observations: 980</code></pre>
 <span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>model_scores <span class="op">=</span> []</span>
 <span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, model <span class="kw">in</span> models.items():</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    rmse_scores <span class="op">=</span> <span class="op">-</span>cross_val_score(</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    cross_validation_scores <span class="op">=</span> cross_validate(</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        model,</span>
 <span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        X_train,</span>
 <span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        y_train,</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        scoring<span class="op">=</span><span class="st">"neg_root_mean_squared_error"</span>,</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span>cross_validation,</span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        n_jobs<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    model_scores.append(</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Model"</span>: model_name,</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Mean cross-validated RMSE"</span>: rmse_scores.mean(),</span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Standard deviation of RMSE"</span>: rmse_scores.std(),</span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>model_comparison <span class="op">=</span> (</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame(model_scores)</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">"Mean cross-validated RMSE"</span>)</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>        scoring<span class="op">=</span>{</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>            <span class="st">"RMSE"</span>: <span class="st">"neg_root_mean_squared_error"</span>,</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>            <span class="st">"MAE"</span>: <span class="st">"neg_mean_absolute_error"</span>,</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        cv<span class="op">=</span>cross_validation,</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        n_jobs<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    rmse_scores <span class="op">=</span> <span class="op">-</span>cross_validation_scores[<span class="st">"test_RMSE"</span>]</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>    mae_scores <span class="op">=</span> <span class="op">-</span>cross_validation_scores[<span class="st">"test_MAE"</span>]</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    model_scores.append(</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Model"</span>: model_name,</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Mean cross-validated RMSE"</span>: rmse_scores.mean(),</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Standard deviation of RMSE"</span>: rmse_scores.std(),</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Mean cross-validated MAE"</span>: mae_scores.mean(),</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Standard deviation of MAE"</span>: mae_scores.std(),</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>model_comparison <span class="op">=</span> (</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame(model_scores)</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    .sort_values(<span class="st">"Mean cross-validated RMSE"</span>)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>
@@ -274,7 +283,7 @@ Test observations: 980</code></pre>
 <section id="training-data-overview" class="level3">
 <h3 class="anchored" data-anchor-id="training-data-overview">Training data overview</h3>
 <p>To assess the quality of the training data, we examined its size, number of predictor variables, missing values, and exact duplicate rows.</p>
-<div id="5e529d91" class="cell" data-execution_count="5">
+<div id="049e04d8" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>training_overview <span class="op">=</span> pd.DataFrame(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    {</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Number of observations"</span>: [<span class="bu">len</span>(train_data)],</span>
@@ -285,7 +294,7 @@ Test observations: 980</code></pre>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>training_overview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="19">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -319,7 +328,7 @@ Test observations: 980</code></pre>
 <section id="distribution-of-wine-quality-scores" class="level3">
 <h3 class="anchored" data-anchor-id="distribution-of-wine-quality-scores">Distribution of wine quality scores</h3>
 <p>We then examined the distribution of the target variable, wine quality score, using the training data only.</p>
-<div id="edd23e95" class="cell" data-execution_count="6">
+<div id="6fd8a3a0" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>quality_counts <span class="op">=</span> (</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    train_data[<span class="st">"quality"</span>]</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    .value_counts()</span>
@@ -329,7 +338,7 @@ Test observations: 980</code></pre>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>quality_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="20">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -385,7 +394,7 @@ Test observations: 980</code></pre>
 </div>
 <p><strong>Table 2. Distribution of wine quality scores in the training data.</strong></p>
 <p>Most wines received quality scores of 5, 6, or 7. In particular, score 6 was the most common rating, with 1,758 observations, whereas scores 3 and 9 were rare, with 16 and 4 observations, respectively.</p>
-<div id="d65a331d" class="cell" data-execution_count="7">
+<div id="8913970a" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -418,7 +427,7 @@ Test observations: 980</code></pre>
 <section id="relationships-between-physicochemical-properties-and-quality" class="level3">
 <h3 class="anchored" data-anchor-id="relationships-between-physicochemical-properties-and-quality">Relationships between physicochemical properties and quality</h3>
 <p>We calculated Pearson correlations between each physicochemical predictor and wine quality score using the training data. These correlations describe linear associations only and do not establish causal relationships.</p>
-<div id="84e1bb89" class="cell" data-execution_count="8">
+<div id="83c00a64" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>correlations <span class="op">=</span> (</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    train_data</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .corr(numeric_only<span class="op">=</span><span class="va">True</span>)[<span class="st">"quality"</span>]</span>
@@ -436,7 +445,7 @@ Test observations: 980</code></pre>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>correlation_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="22">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -511,7 +520,7 @@ Test observations: 980</code></pre>
 </div>
 </div>
 <p><strong>Table 3. Pearson correlations between physicochemical predictors and wine quality score in the training data.</strong></p>
-<div id="78078f59" class="cell" data-execution_count="9">
+<div id="1129b686" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> sns.barplot(</span>
@@ -544,9 +553,9 @@ Test observations: 980</code></pre>
 <section id="model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="model-comparison">Model comparison</h3>
 <p>We compared the models using five-fold cross-validation on the training data. Table 4 reports the mean RMSE across folds; lower RMSE indicates better predictive performance.</p>
-<div id="1a67b140" class="cell" data-execution_count="10">
+<div id="879a20f6" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model_comparison</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="24">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -557,6 +566,8 @@ Test observations: 980</code></pre>
 <th data-quarto-table-cell-role="th">Model</th>
 <th data-quarto-table-cell-role="th">Mean cross-validated RMSE</th>
 <th data-quarto-table-cell-role="th">Standard deviation of RMSE</th>
+<th data-quarto-table-cell-role="th">Mean cross-validated MAE</th>
+<th data-quarto-table-cell-role="th">Standard deviation of MAE</th>
 </tr>
 </thead>
 <tbody>
@@ -565,18 +576,24 @@ Test observations: 980</code></pre>
 <td>Random forest</td>
 <td>0.626218</td>
 <td>0.017673</td>
+<td>0.453419</td>
+<td>0.007577</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">1</th>
 <td>Linear regression</td>
 <td>0.750444</td>
 <td>0.020613</td>
+<td>0.586087</td>
+<td>0.013979</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">2</th>
 <td>Mean baseline</td>
 <td>0.885393</td>
 <td>0.016735</td>
+<td>0.670817</td>
+<td>0.011959</td>
 </tr>
 </tbody>
 </table>
