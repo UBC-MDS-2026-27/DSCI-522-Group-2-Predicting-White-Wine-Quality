@@ -122,4 +122,4 @@ No additional AI instruction files were used.
 
 View the rendered analysis here:
 
-[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/reports/report.html)
+[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/reports/predicting-white-wine-quality-report.html)
