@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Group">
+<meta name="author" content="Ivan Tse, Nidhi Danda, Weizhuo Zhang, Alice Zhang">
 
 <title>Predicting White Wine Quality</title>
 <style>
@@ -130,7 +130,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Group </p>
+             <p>Ivan Tse, Nidhi Danda, Weizhuo Zhang, Alice Zhang </p>
           </div>
   </div>
     
@@ -143,11 +143,22 @@ window.Quarto = {
 </header>
 
 
-<section id="methods" class="level2">
-<h2 class="anchored" data-anchor-id="methods">Methods</h2>
-<section id="data-acquisition" class="level3">
-<h3 class="anchored" data-anchor-id="data-acquisition">Data acquisition</h3>
-<div id="85d09e30" class="cell" data-execution_count="1">
+<section id="summary" class="level1">
+<h1>Summary</h1>
+<p>The purpose of this assignment is to predict the quality of white based on its chemical properties using regression. Specifically, we will be using a mean baseline model, a linear regression model, and a random forest regression model to predict the quality of white wine based on 11 physiochemical predictors. Our forest regression model performed the best, achieving the lowest Root Mean Squared Error (RMSE) of 0.626. Using 3,918 wine observations, majority wines were rated a 6 (1758 wines) and 9 was the least common rating, with only 4 observations.</p>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Global wine exports, specifically winho verde wine from the northwest region, has increased by 36% from 1997 to 2007 (Cortez et al.&nbsp;2009). While many factors contribute to an increase in wine exports, the most significant factor is wine quality. However, assigning a rating to wine may have nothing to do with price, brand, or even the way it was processed - a ‘good’ wine is very subjective and largely varies from person to person. Therefore, methods that estimate wine quality from objective measures could benefit both wine producers and exports.</p>
+<p>Here we ask if we can use a machine learning regression model to predict the quality score of white wine given its physiochemical properties. Physiochemical tests are easily available, whereas expert wine tasting is less accessible and relies on human judgement (Cortez et al.&nbsp;2009). Therefore, if a machine learning model can accurately predict a white wine’s quality score using its physiochemical properties, wine quality assessment can be much faster, less subjective, and more scalable.</p>
+<p>To approach this problem, we used the white wine portion of the Wine Quality data set (Cortez et al.&nbsp;2009). It contains 4,898 samples of wine vinho verde wine from northwestern Portugal. Each sample is described by 11 physiochemical measurements conducted from labratory tests: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol. The target we wan to predict is each wine’s quality score, which is the median of at least 3 evaluations made by wine experts, with each expert grading the wine on a scale of 0 (very bad) to 10 (excellent).</p>
+</section>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The data set studied in this assignment consists of white wine ratings based off 11 physicochemical properties. The dataset can be found <a href="https://archive.ics.uci.edu/dataset/186/wine+quality">here</a></p>
+<div id="0b5be3eb" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> io <span class="im">import</span> BytesIO</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> zipfile <span class="im">import</span> ZipFile</span>
@@ -157,7 +168,7 @@ window.Quarto = {
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="e9502c8c" class="cell" data-execution_count="2">
+<div id="e62f1688" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dataset_url <span class="op">=</span> <span class="st">"https://archive.ics.uci.edu/static/public/186/wine+quality.zip"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>raw_data_path <span class="op">=</span> Path(<span class="st">"../data/raw/winequality-white.csv"</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -172,11 +183,8 @@ window.Quarto = {
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    raw_data_path.write_bytes(archive.read(white_wine_file))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="train-test-split" class="level3">
-<h3 class="anchored" data-anchor-id="train-test-split">Train-test split</h3>
 <p>We loaded the raw white wine data and split it into training and test sets before conducting exploratory data analysis or model fitting. We used a fixed random seed to make the split reproducible and stratified by quality score to preserve its distribution in both data sets.</p>
-<div id="a194bc61" class="cell" data-execution_count="3">
+<div id="49f3dc90" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>wine_data <span class="op">=</span> pd.read_csv(raw_data_path, sep<span class="op">=</span><span class="st">";"</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>train_data, test_data <span class="op">=</span> train_test_split(</span>
@@ -205,12 +213,12 @@ Test observations: 980</code></pre>
 </div>
 </div>
 </section>
-<section id="model-development-and-selection" class="level3">
-<h3 class="anchored" data-anchor-id="model-development-and-selection">Model development and selection</h3>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">Analysis</h2>
 <p>We used all 11 physicochemical measurements as predictor variables. We did not perform feature selection because the objective was prediction, and variables with weak individual linear correlations may still improve multivariable or non-linear models.</p>
 <p>We compared three regression approaches: a mean baseline model, a linear regression model, and a random forest regression model. The linear regression pipeline standardized predictor variables, whereas random forests do not require standardization. We used five-fold cross-validation on the training data to compare models using root mean squared error (RMSE), where lower values indicate better predictive performance. The test set was not used during model selection.</p>
 <p>RMSE was the primary model-selection metric because it places greater weight on large prediction errors. We additionally reported MAE because it provides an interpretable measure of average prediction error.</p>
-<div id="48335d0d" class="cell" data-execution_count="4">
+<div id="71de501b" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.dummy <span class="im">import</span> DummyRegressor</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
@@ -276,19 +284,13 @@ Test observations: 980</code></pre>
 <span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    .reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="final-model-fitting" class="level3">
-<h3 class="anchored" data-anchor-id="final-model-fitting">Final model fitting</h3>
 <p>Based on its lowest cross-validated RMSE and MAE, we selected the random forest model as the final model. We refit this model using all training observations and all 11 physicochemical predictors. The held-out test data were not used during this fitting step.</p>
-<div id="e130281c" class="cell" data-execution_count="5">
+<div id="b29383a5" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>final_model <span class="op">=</span> models[<span class="st">"Random forest"</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>final_model.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section>
-<section id="final-test-set-evaluation" class="level3">
-<h3 class="anchored" data-anchor-id="final-test-set-evaluation">Final test-set evaluation</h3>
 <p>After fitting the selected random forest model on the full training data, we evaluated it once using the held-out test data. We calculated RMSE and MAE. RMSE measures prediction error while placing greater weight on larger errors, whereas MAE represents the average absolute difference between predicted and observed quality scores. For context, we also evaluated the pre-specified mean baseline model on the same held-out test data.</p>
-<div id="98801a67" class="cell" data-execution_count="6">
+<div id="fce45789" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_absolute_error, root_mean_squared_error</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> test_data.drop(columns<span class="op">=</span><span class="st">"quality"</span>)</span>
@@ -322,13 +324,10 @@ Test observations: 980</code></pre>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-</section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<section id="training-data-overview" class="level3">
-<h3 class="anchored" data-anchor-id="training-data-overview">Training data overview</h3>
 <p>To assess the quality of the training data, we examined its size, number of predictor variables, missing values, and exact duplicate rows.</p>
-<div id="3d23e7d8" class="cell" data-execution_count="7">
+<div id="a45533bf" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>training_overview <span class="op">=</span> pd.DataFrame(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    {</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Number of observations"</span>: [<span class="bu">len</span>(train_data)],</span>
@@ -339,7 +338,7 @@ Test observations: 980</code></pre>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>training_overview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -369,11 +368,10 @@ Test observations: 980</code></pre>
 </div>
 <p><strong>Table 1. Training data overview.</strong></p>
 <p>The training data contain 3,918 wine observations and 11 predictor variables. No missing values were identified. We found 609 exact duplicate rows. Because the data set does not include a wine identifier or documentation indicating that repeated measurements are errors, we retained these observations for the analysis.</p>
-</section>
 <section id="distribution-of-wine-quality-scores" class="level3">
 <h3 class="anchored" data-anchor-id="distribution-of-wine-quality-scores">Distribution of wine quality scores</h3>
 <p>We then examined the distribution of the target variable, wine quality score, using the training data only.</p>
-<div id="699b956e" class="cell" data-execution_count="8">
+<div id="c1115145" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>quality_counts <span class="op">=</span> (</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    train_data[<span class="st">"quality"</span>]</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    .value_counts()</span>
@@ -383,7 +381,7 @@ Test observations: 980</code></pre>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>quality_counts</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -439,7 +437,7 @@ Test observations: 980</code></pre>
 </div>
 <p><strong>Table 2. Distribution of wine quality scores in the training data.</strong></p>
 <p>Most wines received quality scores of 5, 6, or 7. In particular, score 6 was the most common rating, with 1,758 observations, whereas scores 3 and 9 were rare, with 16 and 4 observations, respectively.</p>
-<div id="a33f2de6" class="cell" data-execution_count="9">
+<div id="0b9be0ad" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -472,7 +470,7 @@ Test observations: 980</code></pre>
 <section id="relationships-between-physicochemical-properties-and-quality" class="level3">
 <h3 class="anchored" data-anchor-id="relationships-between-physicochemical-properties-and-quality">Relationships between physicochemical properties and quality</h3>
 <p>We calculated Pearson correlations between each physicochemical predictor and wine quality score using the training data. These correlations describe linear associations only and do not establish causal relationships.</p>
-<div id="9e1e780a" class="cell" data-execution_count="10">
+<div id="7e66cedf" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>correlations <span class="op">=</span> (</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    train_data</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    .corr(numeric_only<span class="op">=</span><span class="va">True</span>)[<span class="st">"quality"</span>]</span>
@@ -490,7 +488,7 @@ Test observations: 980</code></pre>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>correlation_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="23">
 <div>
 
 
@@ -565,7 +563,7 @@ Test observations: 980</code></pre>
 </div>
 </div>
 <p><strong>Table 3. Pearson correlations between physicochemical predictors and wine quality score in the training data.</strong></p>
-<div id="0dcbad9c" class="cell" data-execution_count="11">
+<div id="0f075d92" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> sns.barplot(</span>
@@ -598,9 +596,9 @@ Test observations: 980</code></pre>
 <section id="model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="model-comparison">Model comparison</h3>
 <p>We compared the models using five-fold cross-validation on the training data. Table 4 reports the mean RMSE across folds; lower RMSE indicates better predictive performance.</p>
-<div id="f2b6cc29" class="cell" data-execution_count="12">
+<div id="ff2a73da" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model_comparison</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="12">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -653,9 +651,9 @@ Test observations: 980</code></pre>
 <section id="final-test-set-performance" class="level3">
 <h3 class="anchored" data-anchor-id="final-test-set-performance">Final test-set performance</h3>
 <p>We evaluated the selected random forest model once on the held-out test data.</p>
-<div id="667458b3" class="cell" data-execution_count="13">
+<div id="3ba58bfd" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>test_performance</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
@@ -690,6 +688,22 @@ Test observations: 980</code></pre>
 <p><strong>Table 5. Final held-out test-set performance of the selected random forest model.</strong></p>
 <p>The selected random forest model achieved a test RMSE of 0.591 and a test MAE of 0.419. Thus, the model’s predictions differed from the observed wine quality scores by an average of approximately 0.419 quality-score points. The RMSE was higher than the MAE because RMSE places greater weight on larger prediction errors.</p>
 <p>The test RMSE and MAE were slightly lower than the corresponding mean cross-validated values (RMSE = 0.626; MAE = 0.453), suggesting that the model generalized well to the held-out test data. Random forest was selected because it outperformed the candidate models during cross-validation, although prediction errors remained and performance may vary across different samples.</p>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>The findings above suggest that physicochemical properties provide useful information for predicting white wine quality. From the cross validation prediction errors, we can see that from <strong>Table 4</strong> random forest achieved the lowest cross validation error value, outperforming both linear regression and the mean baseline model. Additionally, from <strong>Table 5</strong> on the held-out test set, random forest achieved <span class="math inline">\(RMSE = 0.591\)</span> and <span class="math inline">\(MAE = 0.419\)</span> while the mean baseline model obtains <span class="math inline">\(RMSE = 0.886\)</span>. These results indicate that the physicochemical measurements used by a learned model like random forest can be applied to improve predictions of white wine quality than just simply predicting the average quality score as the baseline model. However, the existing prediction errors suggest that the physicochemical properties from the data set alone may not be able to fully predict variations in white wine quality scores.</p>
+<p>The limitation mentioned above can be analyzed from several aspects. Firstly, the better performance of random forest compared with linear regression suggests that wine quality may involve nonlinear relationships between physicochemical properties. From our EDA in <strong>Table 3</strong> and <strong>Figure 2</strong> we can observe that individual properties demonstrate weak to medium correlations with the quality score, with alcohol having the highest positive correlation <span class="math inline">\(r = 0.423\)</span>. Secondly, the machine learning model itself cannot replace human evaluation, and other factors may also influence wine quality scores. In the real-world context, the physicochemical properties we used and the machine learning methodology could support wine quality assessment (not limited to white wine in this case). For example, a previous research shows that machine learning and digital sensing technologies can use the physicochemical properties to assess quality for vertical vintage of Shiraz wines (Harris et al.&nbsp;2023).</p>
+<p>The results were generally consistent with our expectations as random forest which is capable of capturing relatively complex relationships than linear regression and the mean baseline model obtains the best performance. However, we assume that the training and test sets should have relatively independent observations. From the results section above, we identified 609 duplicated observations in the training set as shown in <strong>Table 1</strong>. The 609 duplicated observations were not removed because we did not know their origin. One potential concern is that these duplicated observations may introduce data leakage as identical observations could appear in both the training sets and validation sets. Furthermore, random forest has a relatively good capability to capture the relationship between these identical observations and results in an optimistic predicting result. Additionally, in <strong>Figure 1</strong> and <strong>Table 2</strong> we showed that the distribution of the white wine quality scores were distributed unevenly as most of the quality scores are concentrated between 5 to 7, that is, the quantity of data for both the very-low and very-high ends might be insufficient for models to make relatively reliable predictions.</p>
+<p>As mentioned at the beginning of the discussion, the random forest model achieved a test <span class="math inline">\(MAE = 0.419\)</span>, which means that the random forest test MAE predictions differed from the actual wine quality ratings by approximately 0.42 points on average, indicating relatively small prediction errors compared with the baseline model. Therefore, our findings suggest that machine learning could assist wine producers improve the efficiency of quality assessment and support quality control decisions. A reasonable future research topic using the current scope could be whether removing the duplicated observations and addressing the imbalance in quality scores would improve model reliability. Furthermore, I would also like to mention that within the current scope (but for future analysis), we could also try to use grouped splitting method at train-test set splitting stage if we want to keep the duplicates, and we could also calculate the MAE for each true quality to see if the model has poor behaviour on specific quality scores if we have more data for very-high and very-low end scores. Additionally, the physicochemical measurements can also help to predict sensory properties using machine learning model such as random forest (María-Pilar et al.&nbsp;2025), which could be helpful to assess wine quality and develop more reliable and practical predictions for the wine industry.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Cortez, Paulo, António Cerdeira, Fernando Almeida, Telmo Matos, and José Reis. 2009. “Modeling Wine Preferences by Data Mining from Physicochemical Properties.” Decision Support Systems 47 (4): 547–53. https://doi.org/10.1016/j.dss.2009.05.016.</p>
+<p>Natalie Harris, Claudia Gonzalez Viejo, Christopher Barnes, Alexis Pang, Sigfredo Fuentes. 2023. “Wine quality assessment for Shiraz vertical vintages based on digital technologies and machine learning modeling”, Food Bioscience, Volume 56, 2023, 103354, ISSN 2212-4292. https://doi.org/10.1016/j.fbio.2023.103354.</p>
+<p>María-Pilar Sáenz-Navajas, Chelo Ferreira, Susan E.P. Bastian, David W. Jeffery. 2025. “Bagging and boosting machine learning algorithms for modelling sensory perception from simple chemical variables: Wine mouthfeel as a case study”, Food Quality and Preference, Volume 129, 2025, 105494, ISSN 0950-3293. https://doi.org/10.1016/j.foodqual.2025.105494.</p>
+<p>Agyemang, Perpetual Opoku. 2010. “Modeling the Preference of Wine Quality Using Logistic Regression Techniques Based on Physicochemical Properties.” Master’s thesis, Youngstown State University. http://hdl.handle.net/1989/10638.</p>
+<p>Angus, Dale. 2019. “Modeling Wine Quality from Physicochemical Properties.” CS229: Machine Learning project report, Stanford University. https://cs229.stanford.edu/proj2019aut/data/assignment_308832_raw/25895690.pdf.</p>
 </section>
 </section>
 

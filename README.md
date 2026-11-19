@@ -57,12 +57,12 @@ quarto --version
 Render the Quarto document using:
 
 ```bash
-uv run quarto render reports/predicting-white-wine-quality-report.qmd
+uv run quarto render analysis/white-wine-quality.qmd
 ```
 
 The rendered HTML report will be generated in the report directory.
 
-Open `report.html` in your browser to view the report.
+Open `white-wine-quality.html` in your browser to view the report.
 
 ## Dependencies
 
@@ -122,4 +122,4 @@ No additional AI instruction files were used.
 
 View the rendered analysis here:
 
-[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/reports/predicting-white-wine-quality-report.html)
+[Predicting White Wine Quality Using Physicochemical Properties](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/analysis/white-wine-quality.html)
