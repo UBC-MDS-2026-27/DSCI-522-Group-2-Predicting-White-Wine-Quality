@@ -1,9 +1,26 @@
 ---
-title: "Predicting white wine quality using chemical properties"
-author: "Ivan Tse, Nathan Zhang, Nidhi Danda, Yunjin Zhang"
-date: "2026/11/18"
+title: "Predicting White Wine Quality"
+author: "Ivan Tse, Nidhi Danda, Weizhuo Zhang, Alice Zhang"
+format: html
 jupyter: python3
 ---
+# Summary
+
+The purpose of this assignment is to predict the quality of white based on its chemical properties using regression. Specifically, we will be using a mean baseline model, a linear regression model, and a random forest regression model to predict the quality of white wine based on 11 physiochemical predictors. Our forest regression model performed the best, achieving the lowest Root Mean Squared Error (RMSE) of 0.626. Using 3,918 wine observations, majority wines were rated a 6 (1758 wines) and 9 was the least common rating, with only 4 observations.
+
+# Introduction
+
+Global wine exports, specifically winho verde wine from the northwest region, has increased by 36% from 1997 to 2007 (Cortez et al. 2009). While many factors contribute to an increase in wine exports, the most significant factor is wine quality. However, assigning a rating to wine may have nothing to do with price, brand, or even the way it was processed - a ‘good’ wine is very subjective and largely varies from person to person. Therefore, methods that estimate wine quality from objective measures could benefit both wine producers and exports.
+
+Here we ask if we can use a machine learning regression model to predict the quality score of white wine given its physiochemical properties. Physiochemical tests are easily available, whereas expert wine tasting is less accessible and relies on human judgement (Cortez et al. 2009). Therefore, if a machine learning model can accurately predict a white wine’s quality score using its physiochemical properties, wine quality assessment can be much faster, less subjective, and more scalable.
+
+To approach this problem, we used the white wine portion of the Wine Quality data set (Cortez et al. 2009). It contains 4,898 samples of wine vinho verde wine from northwestern Portugal. Each sample is described by 11 physiochemical measurements conducted from labratory tests: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol. The target we wan to predict is each wine’s quality score, which is the median of at least 3 evaluations made by wine experts, with each expert grading the wine on a scale of 0 (very bad) to 10 (excellent).
+
+# Methods
+
+## Data
+
+The data set studied in this assignment consists of white wine ratings based off 11 physicochemical properties. The dataset can be found [here](https://archive.ics.uci.edu/dataset/186/wine+quality)
 
 ```{python}
 from io import BytesIO
@@ -16,19 +33,6 @@ import requests
 from sklearn.model_selection import train_test_split
 ```
 
-# Summary
-The purpose of this assignment is to predict the quality of white based on its chemical properties using regression. Specifically, we will be using a mean baseline model, a linear regression model, and a random forest regression model to predict the quality of white wine based on 11 physiochemical predictors. Our forest regression model performed the best, achieving the lowest Root Mean Squared Error (RMSE) of 0.626. Using 3,918 wine observations, majority wines were rated a 6 (1758 wines) and 9 was the least common rating, with only 4 observations. 
-
-# Introduction
-Global wine exports, specifically winho verde wine from the northwest region, has increased by 36% from 1997 to 2007 (Cortez et al. 2009). While many factors contribute to an increase in wine exports, the most significant factor is wine quality. However, assigning a rating to wine may have nothing to do with price, brand, or even the way it was processed - a 'good' wine is very subjective and largely varies from person to person. Therefore, methods that estimate wine quality from objective measures could benefit both wine producers and exports. 
-
-Here we ask if we can use a machine learning regression model to predict the quality score of white wine given its physiochemical properties. Physiochemical tests are easily available, whereas expert wine tasting is less accessible and relies on human judgement (Cortez et al. 2009). Therefore, if a machine learning model can accurately predict a white wine's quality score using its physiochemical properties, wine quality assessment can be much faster, less subjective, and more scalable. 
-
-To approach this problem, we used the white wine portion of the Wine Quality data set (Cortez et al. 2009). It contains 4,898 samples of wine vinho verde wine from northwestern Portugal. Each sample is described by 11 physiochemical measurements conducted from labratory tests: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol. The target we wan to predict is each wine's quality score, which is the median of at least 3 evaluations made by wine experts, with each expert grading the wine on a scale of 0 (very bad) to 10 (excellent). 
-
-# Methods
-
-## Data
 ```{python}
 dataset_url = "https://archive.ics.uci.edu/static/public/186/wine+quality.zip"
 raw_data_path = Path("../data/raw/winequality-white.csv")
@@ -73,6 +77,7 @@ print(f"Test observations: {len(test_data)}")
 ```
 
 ## Analysis
+
 We used all 11 physicochemical measurements as predictor variables. We did not perform feature selection because the objective was prediction, and variables with weak individual linear correlations may still improve multivariable or non-linear models.
 
 We compared three regression approaches: a mean baseline model, a linear regression model, and a random forest regression model. The linear regression pipeline standardized predictor variables, whereas random forests do not require standardization. We used five-fold cross-validation on the training data to compare models using root mean squared error (RMSE), where lower values indicate better predictive performance. The test set was not used during model selection.
@@ -148,9 +153,6 @@ model_comparison = (
 )
 ```
 
-# Results & Discussion
-### Final model fitting
-
 Based on its lowest cross-validated RMSE and MAE, we selected the random forest model as the final model. We refit this model using all training observations and all 11 physicochemical predictors. The held-out test data were not used during this fitting step.
 
 ```{python}
@@ -159,8 +161,6 @@ Based on its lowest cross-validated RMSE and MAE, we selected the random forest 
 final_model = models["Random forest"]
 final_model.fit(X_train, y_train)
 ```
-
-### Final test-set evaluation
 
 After fitting the selected random forest model on the full training data, we evaluated it once using the held-out test data. We calculated RMSE and MAE. RMSE measures prediction error while placing greater weight on larger errors, whereas MAE represents the average absolute difference between predicted and observed quality scores. For context, we also evaluated the pre-specified mean baseline model on the same held-out test data.
 
@@ -201,8 +201,6 @@ test_performance = pd.DataFrame(
 ```
 
 ## Results
-
-### Training data overview
 
 To assess the quality of the training data, we examined its size, number of predictor variables, missing values, and exact duplicate rows.
 
@@ -334,12 +332,10 @@ Random forest achieved the best cross-validated predictive performance, with a m
 
 The agreement between RMSE and MAE indicates that random forest both reduced average prediction error and avoided larger prediction errors more effectively than the other candidate models. The standard deviations were small across all folds, suggesting that the model comparisons were stable. We therefore selected random forest as the final model, pending review before evaluation on the held-out test data.
 
-# References
-Agyemang, Perpetual Opoku. 2010. “Modeling the Preference of Wine Quality Using Logistic Regression Techniques Based on Physicochemical Properties.” Master’s thesis, Youngstown State University. http://hdl.handle.net/1989/10638.
+### Final test-set performance
 
-Angus, Dale. 2019. “Modeling Wine Quality from Physicochemical Properties.” CS229: Machine Learning project report, Stanford University. https://cs229.stanford.edu/proj2019aut/data/assignment_308832_raw/25895690.pdf.
+We evaluated the selected random forest model once on the held-out test data.
 
-Cortez, Paulo, António Cerdeira, Fernando Almeida, Telmo Matos, and José Reis. 2009. “Modeling Wine Preferences by Data Mining from Physicochemical Properties.” Decision Support Systems 47 (4): 547–53. https://doi.org/10.1016/j.dss.2009.05.016.
 ```{python}
 test_performance
 ```
@@ -362,6 +358,12 @@ As mentioned at the beginning of the discussion, the random forest model achieve
 
 ## References
 
+Cortez, Paulo, António Cerdeira, Fernando Almeida, Telmo Matos, and José Reis. 2009. “Modeling Wine Preferences by Data Mining from Physicochemical Properties.” Decision Support Systems 47 (4): 547–53. https://doi.org/10.1016/j.dss.2009.05.016.
+
 Natalie Harris, Claudia Gonzalez Viejo, Christopher Barnes, Alexis Pang, Sigfredo Fuentes. 2023. "Wine quality assessment for Shiraz vertical vintages based on digital technologies and machine learning modeling", Food Bioscience, Volume 56, 2023, 103354, ISSN 2212-4292. https://doi.org/10.1016/j.fbio.2023.103354.
 
 María-Pilar Sáenz-Navajas, Chelo Ferreira, Susan E.P. Bastian, David W. Jeffery. 2025. "Bagging and boosting machine learning algorithms for modelling sensory perception from simple chemical variables: Wine mouthfeel as a case study", Food Quality and Preference, Volume 129, 2025, 105494, ISSN 0950-3293. https://doi.org/10.1016/j.foodqual.2025.105494.
+
+Agyemang, Perpetual Opoku. 2010. “Modeling the Preference of Wine Quality Using Logistic Regression Techniques Based on Physicochemical Properties.” Master’s thesis, Youngstown State University. http://hdl.handle.net/1989/10638.
+
+Angus, Dale. 2019. “Modeling Wine Quality from Physicochemical Properties.” CS229: Machine Learning project report, Stanford University. https://cs229.stanford.edu/proj2019aut/data/assignment_308832_raw/25895690.pdf.
