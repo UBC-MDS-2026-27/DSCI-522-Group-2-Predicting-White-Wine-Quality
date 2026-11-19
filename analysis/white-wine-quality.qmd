@@ -333,3 +333,36 @@ test_performance
 The selected random forest model achieved a test RMSE of 0.591 and a test MAE of 0.419. Thus, the model’s predictions differed from the observed wine quality scores by an average of approximately 0.419 quality-score points. The RMSE was higher than the MAE because RMSE places greater weight on larger prediction errors.
 
 The test RMSE and MAE were slightly lower than the corresponding mean cross-validated values (RMSE = 0.626; MAE = 0.453), suggesting that the model generalized well to the held-out test data. Random forest was selected because it outperformed the candidate models during cross-validation, although prediction errors remained and performance may vary across different samples.
+
+
+
+## Discussion
+
+The findings above suggest that physicochemical properties provide useful information for predicting white wine quality. From the cross validation prediction errors, we can see that from Table 4 random forest achieved the lowest cross validation error value, outperforming both linear regression and the mean baseline model. Additionally, from Table 5, on the held-out test set, random forest achieved $RMSE = 0.591$ and $MAE = 0.419$ while the mean baseline model obtains $RMSE = 0.886$. These results indicate that the physicochemical measurements used by a learned model like random forest can be applied to improve predictions of white wine quality than just simply predicting the average quality score as the baseline model. However, the existing prediction errors suggest that the physicochemical properties from the data set alone may not be able to fully predict variations in white wine quality scores.
+
+The limitations mentioned above can be analyzed from several aspects. Firstly, the better performance of random forest compared with linear regression suggests that wine quality may involve nonlinear relationships between physicochemical properties. From our EDA in Table 3 and Figure 2 we can observe that individual properties demonstrate weak to medium correlations with the quality score, with alcohol having the highest positive correlation $r = 0.423$. Secondly, the machine learning model itself cannot replace human evaluation, and other factors may also influence wine quality scores. In the real-world context, the physicochemical properties we used and the machine learning methodology could support wine quality assessment (not limited to white wine in this case). For example, a previous research shows that machine learning and digital sensing technologies can use the physicochemical properties to assess quality for vertical vintage of Shiraz wines (Harris et al. 2023). 
+
+The results were generally consistent with our expectations as random forest which is capable of capturing relatively complex relationships than linear regression and the mean baseline model obtains the best performance. However, we assume that the training and test sets should have relatively independent observations. From the results section above, we identified 609 duplicated observations in the training set as shown in Table 1. The 609 duplicated observations were not removed because we did not know their origin. One potential concern is that these duplicated observations may introduce data leakage as identical observations could appear in both the training sets and validation sets. Furthermore, random forest has a relatively good capability to capture the relationship between these identical observations and results in an optimistic predicting result. Additionally, in Figure 1 and Table 2 we showed that the distribution of the white wine quality scores were distributed unevenly as most of the quality scores are concentrated between 5 to 7, that is, the quantity of data for both the very-low and very-high ends might be insufficient for models to make relatively reliable predictions.  
+
+
+## References
+
+Natalie Harris, Claudia Gonzalez Viejo, Christopher Barnes, Alexis Pang, Sigfredo Fuentes. 2023. "Wine quality assessment for Shiraz vertical vintages based on digital technologies and machine learning modeling", Food Bioscience, Volume 56, 2023, 103354, ISSN 2212-4292. https://doi.org/10.1016/j.fbio.2023.103354.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
