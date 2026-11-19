@@ -12,3 +12,7 @@ dependencies = [
     "scikit-learn>=1.9.1",
     "seaborn>=0.13.2",
 ]
+
+[tool.uv]
+# `uv add` writes an exact version (==)
+add-bounds = "exact"
