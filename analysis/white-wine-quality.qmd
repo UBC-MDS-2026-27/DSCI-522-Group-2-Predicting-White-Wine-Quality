@@ -1,13 +1,9 @@
 ---
-title: "Predicting White Wine Quality"
-author: "Group"
-format: html
+title: "Predicting white wine quality using chemical properties"
+author: "Ivan Tse, Nathan Zhang, Nidhi Danda, Yunjin Zhang"
+date: "2026/11/18"
 jupyter: python3
 ---
-
-## Methods
-
-### Data acquisition
 
 ```{python}
 from io import BytesIO
@@ -20,6 +16,19 @@ import requests
 from sklearn.model_selection import train_test_split
 ```
 
+# Summary
+The purpose of this assignment is to predict the quality of white based on its chemical properties using regression. Specifically, we will be using a mean baseline model, a linear regression model, and a random forest regression model to predict the quality of white wine based on 11 physiochemical predictors. Our forest regression model performed the best, achieving the lowest Root Mean Squared Error (RMSE) of 0.626. Using 3,918 wine observations, majority wines were rated a 6 (1758 wines) and 9 was the least common rating, with only 4 observations. 
+
+# Introduction
+Global wine exports, specifically winho verde wine from the northwest region, has increased by 36% from 1997 to 2007 (Cortez et al. 2009). While many factors contribute to an increase in wine exports, the most significant factor is wine quality. However, assigning a rating to wine may have nothing to do with price, brand, or even the way it was processed - a 'good' wine is very subjective and largely varies from person to person. Therefore, methods that estimate wine quality from objective measures could benefit both wine producers and exports. 
+
+Here we ask if we can use a machine learning regression model to predict the quality score of white wine given its physiochemical properties. Physiochemical tests are easily available, whereas expert wine tasting is less accessible and relies on human judgement (Cortez et al. 2009). Therefore, if a machine learning model can accurately predict a white wine's quality score using its physiochemical properties, wine quality assessment can be much faster, less subjective, and more scalable. 
+
+To approach this problem, we used the white wine portion of the Wine Quality data set (Cortez et al. 2009). It contains 4,898 samples of wine vinho verde wine from northwestern Portugal. Each sample is described by 11 physiochemical measurements conducted from labratory tests: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, and alcohol. The target we wan to predict is each wine's quality score, which is the median of at least 3 evaluations made by wine experts, with each expert grading the wine on a scale of 0 (very bad) to 10 (excellent). 
+
+# Methods
+
+## Data
 ```{python}
 dataset_url = "https://archive.ics.uci.edu/static/public/186/wine+quality.zip"
 raw_data_path = Path("../data/raw/winequality-white.csv")
@@ -35,8 +44,6 @@ with ZipFile(BytesIO(response.content)) as archive:
     )
     raw_data_path.write_bytes(archive.read(white_wine_file))
 ```
-
-### Train-test split
 
 We loaded the raw white wine data and split it into training and test sets before conducting exploratory data analysis or model fitting. We used a fixed random seed to make the split reproducible and stratified by quality score to preserve its distribution in both data sets.
 
@@ -65,13 +72,13 @@ print(f"Training observations: {len(train_data)}")
 print(f"Test observations: {len(test_data)}")
 ```
 
-### Model development and selection
-
+## Analysis
 We used all 11 physicochemical measurements as predictor variables. We did not perform feature selection because the objective was prediction, and variables with weak individual linear correlations may still improve multivariable or non-linear models.
 
 We compared three regression approaches: a mean baseline model, a linear regression model, and a random forest regression model. The linear regression pipeline standardized predictor variables, whereas random forests do not require standardization. We used five-fold cross-validation on the training data to compare models using root mean squared error (RMSE), where lower values indicate better predictive performance. The test set was not used during model selection.
 
 RMSE was the primary model-selection metric because it places greater weight on large prediction errors. We additionally reported MAE because it provides an interpretable measure of average prediction error.
+
 ```{python}
 #| output: false
 
@@ -141,63 +148,7 @@ model_comparison = (
 )
 ```
 
-### Final model fitting
-
-Based on its lowest cross-validated RMSE and MAE, we selected the random forest model as the final model. We refit this model using all training observations and all 11 physicochemical predictors. The held-out test data were not used during this fitting step.
-
-```{python}
-#| output: false
-
-final_model = models["Random forest"]
-final_model.fit(X_train, y_train)
-```
-
-### Final test-set evaluation
-
-After fitting the selected random forest model on the full training data, we evaluated it once using the held-out test data. We calculated RMSE and MAE. RMSE measures prediction error while placing greater weight on larger errors, whereas MAE represents the average absolute difference between predicted and observed quality scores.
-For context, we also evaluated the pre-specified mean baseline model on the same held-out test data.
-```{python}
-#| output: false
-
-from sklearn.metrics import mean_absolute_error, root_mean_squared_error
-
-X_test = test_data.drop(columns="quality")
-y_test = test_data["quality"]
-
-test_predictions = final_model.predict(X_test)
-
-test_rmse = root_mean_squared_error(y_test, test_predictions)
-test_mae = mean_absolute_error(y_test, test_predictions)
-
-baseline_model = DummyRegressor(strategy="mean")
-baseline_model.fit(X_train, y_train)
-
-baseline_predictions = baseline_model.predict(X_test)
-
-baseline_test_rmse = root_mean_squared_error(
-    y_test,
-    baseline_predictions,
-)
-baseline_test_mae = mean_absolute_error(
-    y_test,
-    baseline_predictions,
-)
-
-test_performance = pd.DataFrame(
-    {
-        "Model": ["Random forest", "Mean baseline"],
-        "Test RMSE": [test_rmse, baseline_test_rmse],
-        "Test MAE": [test_mae, baseline_test_mae],
-    }
-)
-```
-
-
-
-## Results
-
-### Training data overview
-
+# Results & Discussion
 To assess the quality of the training data, we examined its size, number of predictor variables, missing values, and exact duplicate rows.
 
 ```{python}
@@ -321,15 +272,9 @@ Random forest achieved the best cross-validated predictive performance, with a m
 
 The agreement between RMSE and MAE indicates that random forest both reduced average prediction error and avoided larger prediction errors more effectively than the other candidate models. The standard deviations were small across all folds, suggesting that the model comparisons were stable. We therefore selected random forest as the final model, pending review before evaluation on the held-out test data.
 
-### Final test-set performance
+# References
+Agyemang, Perpetual Opoku. 2010. “Modeling the Preference of Wine Quality Using Logistic Regression Techniques Based on Physicochemical Properties.” Master’s thesis, Youngstown State University. http://hdl.handle.net/1989/10638.
 
-We evaluated the selected random forest model once on the held-out test data.
+Angus, Dale. 2019. “Modeling Wine Quality from Physicochemical Properties.” CS229: Machine Learning project report, Stanford University. https://cs229.stanford.edu/proj2019aut/data/assignment_308832_raw/25895690.pdf.
 
-```{python}
-test_performance
-```
-**Table 5. Final held-out test-set performance of the selected random forest model.**
-
-The selected random forest model achieved a test RMSE of 0.591 and a test MAE of 0.419. Thus, the model’s predictions differed from the observed wine quality scores by an average of approximately 0.419 quality-score points. The RMSE was higher than the MAE because RMSE places greater weight on larger prediction errors.
-
-The test RMSE and MAE were slightly lower than the corresponding mean cross-validated values (RMSE = 0.626; MAE = 0.453), suggesting that the model generalized well to the held-out test data. Random forest was selected because it outperformed the candidate models during cross-validation, although prediction errors remained and performance may vary across different samples.
+Cortez, Paulo, António Cerdeira, Fernando Almeida, Telmo Matos, and José Reis. 2009. “Modeling Wine Preferences by Data Mining from Physicochemical Properties.” Decision Support Systems 47 (4): 547–53. https://doi.org/10.1016/j.dss.2009.05.016.
