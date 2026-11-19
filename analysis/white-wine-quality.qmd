@@ -72,6 +72,7 @@ We used all 11 physicochemical measurements as predictor variables. We did not p
 We compared three regression approaches: a mean baseline model, a linear regression model, and a random forest regression model. The linear regression pipeline standardized predictor variables, whereas random forests do not require standardization. We used five-fold cross-validation on the training data to compare models using root mean squared error (RMSE), where lower values indicate better predictive performance. The test set was not used during model selection.
 
 RMSE was the primary model-selection metric because it places greater weight on large prediction errors. We additionally reported MAE because it provides an interpretable measure of average prediction error.
+
 ```{python}
 #| output: false
 
@@ -154,8 +155,8 @@ final_model.fit(X_train, y_train)
 
 ### Final test-set evaluation
 
-After fitting the selected random forest model on the full training data, we evaluated it once using the held-out test data. We calculated RMSE and MAE. RMSE measures prediction error while placing greater weight on larger errors, whereas MAE represents the average absolute difference between predicted and observed quality scores.
-For context, we also evaluated the pre-specified mean baseline model on the same held-out test data.
+After fitting the selected random forest model on the full training data, we evaluated it once using the held-out test data. We calculated RMSE and MAE. RMSE measures prediction error while placing greater weight on larger errors, whereas MAE represents the average absolute difference between predicted and observed quality scores. For context, we also evaluated the pre-specified mean baseline model on the same held-out test data.
+
 ```{python}
 #| output: false
 
@@ -192,8 +193,6 @@ test_performance = pd.DataFrame(
 )
 ```
 
-
-
 ## Results
 
 ### Training data overview
@@ -212,6 +211,7 @@ training_overview = pd.DataFrame(
 
 training_overview
 ```
+
 **Table 1. Training data overview.**
 
 The training data contain 3,918 wine observations and 11 predictor variables. No missing values were identified. We found 609 exact duplicate rows. Because the data set does not include a wine identifier or documentation indicating that repeated measurements are errors, we retained these observations for the analysis.
@@ -231,6 +231,7 @@ quality_counts = (
 
 quality_counts
 ```
+
 **Table 2. Distribution of wine quality scores in the training data.**
 
 Most wines received quality scores of 5, 6, or 7. In particular, score 6 was the most common rating, with 1,758 observations, whereas scores 3 and 9 were rare, with 16 and 4 observations, respectively.
@@ -255,6 +256,7 @@ ax.set(
 
 plt.show()
 ```
+
 **Figure 1. Distribution of white wine quality scores in the training data.**
 
 Figure 1 shows that the target distribution is concentrated around mid-range scores. This imbalance means that predictions for very low- and very high-quality wines may be less reliable because few examples of these scores are available for model training.
@@ -262,6 +264,7 @@ Figure 1 shows that the target distribution is concentrated around mid-range sco
 ### Relationships between physicochemical properties and quality
 
 We calculated Pearson correlations between each physicochemical predictor and wine quality score using the training data. These correlations describe linear associations only and do not establish causal relationships.
+
 ```{python}
 correlations = (
     train_data
@@ -281,6 +284,7 @@ correlation_table.columns = [
 
 correlation_table
 ```
+
 **Table 3. Pearson correlations between physicochemical predictors and wine quality score in the training data.**
 
 ```{python}
@@ -302,6 +306,7 @@ ax.set(
 
 plt.show()
 ```
+
 **Figure 2. Pearson correlations between physicochemical predictors and wine quality score in the training data.**
 
 Alcohol had the strongest positive linear association with wine quality score ($r = 0.423$). Density had the strongest negative association ($r = -0.306$). Volatile acidity ($r = -0.214$) and chlorides ($r = -0.206$) also showed negative associations with quality. In contrast, citric acid had almost no linear association with quality ($r = -0.001$).
@@ -315,6 +320,7 @@ We compared the models using five-fold cross-validation on the training data. Ta
 ```{python}
 model_comparison
 ```
+
 **Table 4. Five-fold cross-validated RMSE and MAE for the candidate regression models.**
 
 Random forest achieved the best cross-validated predictive performance, with a mean RMSE of 0.626 and a mean MAE of 0.453. Both values were lower than those of linear regression (RMSE = 0.750; MAE = 0.586) and the mean baseline model (RMSE = 0.885; MAE = 0.671).
@@ -328,8 +334,25 @@ We evaluated the selected random forest model once on the held-out test data.
 ```{python}
 test_performance
 ```
+
 **Table 5. Final held-out test-set performance of the selected random forest model.**
 
 The selected random forest model achieved a test RMSE of 0.591 and a test MAE of 0.419. Thus, the model’s predictions differed from the observed wine quality scores by an average of approximately 0.419 quality-score points. The RMSE was higher than the MAE because RMSE places greater weight on larger prediction errors.
 
 The test RMSE and MAE were slightly lower than the corresponding mean cross-validated values (RMSE = 0.626; MAE = 0.453), suggesting that the model generalized well to the held-out test data. Random forest was selected because it outperformed the candidate models during cross-validation, although prediction errors remained and performance may vary across different samples.
+
+## Discussion
+
+The findings above suggest that physicochemical properties provide useful information for predicting white wine quality. From the cross validation prediction errors, we can see that from **Table 4** random forest achieved the lowest cross validation error value, outperforming both linear regression and the mean baseline model. Additionally, from **Table 5** on the held-out test set, random forest achieved $RMSE = 0.591$ and $MAE = 0.419$ while the mean baseline model obtains $RMSE = 0.886$. These results indicate that the physicochemical measurements used by a learned model like random forest can be applied to improve predictions of white wine quality than just simply predicting the average quality score as the baseline model. However, the existing prediction errors suggest that the physicochemical properties from the data set alone may not be able to fully predict variations in white wine quality scores.
+
+The limitation mentioned above can be analyzed from several aspects. Firstly, the better performance of random forest compared with linear regression suggests that wine quality may involve nonlinear relationships between physicochemical properties. From our EDA in **Table 3** and **Figure 2** we can observe that individual properties demonstrate weak to medium correlations with the quality score, with alcohol having the highest positive correlation $r = 0.423$. Secondly, the machine learning model itself cannot replace human evaluation, and other factors may also influence wine quality scores. In the real-world context, the physicochemical properties we used and the machine learning methodology could support wine quality assessment (not limited to white wine in this case). For example, a previous research shows that machine learning and digital sensing technologies can use the physicochemical properties to assess quality for vertical vintage of Shiraz wines (Harris et al. 2023).
+
+The results were generally consistent with our expectations as random forest which is capable of capturing relatively complex relationships than linear regression and the mean baseline model obtains the best performance. However, we assume that the training and test sets should have relatively independent observations. From the results section above, we identified 609 duplicated observations in the training set as shown in **Table 1**. The 609 duplicated observations were not removed because we did not know their origin. One potential concern is that these duplicated observations may introduce data leakage as identical observations could appear in both the training sets and validation sets. Furthermore, random forest has a relatively good capability to capture the relationship between these identical observations and results in an optimistic predicting result. Additionally, in **Figure 1** and **Table 2** we showed that the distribution of the white wine quality scores were distributed unevenly as most of the quality scores are concentrated between 5 to 7, that is, the quantity of data for both the very-low and very-high ends might be insufficient for models to make relatively reliable predictions.
+
+As mentioned at the beginning of the discussion, the random forest model achieved a test $MAE = 0.419$, which means that the random forest test MAE predictions differed from the actual wine quality ratings by approximately 0.42 points on average, indicating relatively small prediction errors compared with the baseline model. Therefore, our findings suggest that machine learning could assist wine producers improve the efficiency of quality assessment and support quality control decisions. A reasonable future research topic using the current scope could be whether removing the duplicated observations and addressing the imbalance in quality scores would improve model reliability. Furthermore, I would also like to mention that within the current scope (but for future analysis), we could also try to use grouped splitting method at train-test set splitting stage if we want to keep the duplicates, and we could also calculate the MAE for each true quality to see if the model has poor behaviour on specific quality scores if we have more data for very-high and very-low end scores. Additionally, the physicochemical measurements can also help to predict sensory properties using machine learning model such as random forest (María-Pilar et al. 2025), which could be helpful to assess wine quality and develop more reliable and practical predictions for the wine industry.
+
+## References
+
+Natalie Harris, Claudia Gonzalez Viejo, Christopher Barnes, Alexis Pang, Sigfredo Fuentes. 2023. "Wine quality assessment for Shiraz vertical vintages based on digital technologies and machine learning modeling", Food Bioscience, Volume 56, 2023, 103354, ISSN 2212-4292. https://doi.org/10.1016/j.fbio.2023.103354.
+
+María-Pilar Sáenz-Navajas, Chelo Ferreira, Susan E.P. Bastian, David W. Jeffery. 2025. "Bagging and boosting machine learning algorithms for modelling sensory perception from simple chemical variables: Wine mouthfeel as a case study", Food Quality and Preference, Volume 129, 2025, 105494, ISSN 0950-3293. https://doi.org/10.1016/j.foodqual.2025.105494.
