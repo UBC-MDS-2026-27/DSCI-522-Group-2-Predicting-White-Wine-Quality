@@ -60,7 +60,7 @@ Render the Quarto document using:
 uv run quarto render analysis/white-wine-quality.qmd
 ```
 
-The rendered HTML report will be generated in the report directory.
+The rendered HTML report will be generated in the analysis directory.
 
 Open `white-wine-quality.html` in your browser to view the report.
 
