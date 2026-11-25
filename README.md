@@ -15,15 +15,15 @@ This project investigates whether the physicochemical properties of Portuguese w
 
 ## Report
 
-The final report can be found here (HTML)[https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/].
+The final report can be found here [HTML](https://ubc-mds-2026-27.github.io/DSCI-522-Group-2-Predicting-White-Wine-Quality/).
 
 ## Usage
 
-We run the analysis in a Docker container, so the same software and package versions are used. The image is published on Docker Hub at (link)[https://hub.docker.com/r/nathanzhang96/dsci-522-group-2-predicting-white-wine-quality]
+We run the analysis in a Docker container, so the same software and package versions are used. The image is published on Docker Hub at [link](https://hub.docker.com/r/nathanzhang96/dsci-522-group-2-predicting-white-wine-quality)
 
 ### Setup
 
-If it is your first time running this project, install and launch (Docker)[https://www.docker.com/get-started/], then clone this repository and move into it:
+If it is your first time running this project, install and launch [Docker](https://www.docker.com/get-started/), then clone this repository and move into it:
 
 ```bash
 git clone https://github.com/UBC-MDS-2026-27/DSCI-522-Predicting-White-Wine-Quality.git
@@ -92,7 +92,7 @@ This project uses the following licenses:
 - Project source code: [MIT License](LICENSE.md)
 - Project Report: [Creative Commons Attribution 4.0 International (CC BY-NC-ND 4.0)](LICENSE.md)
 
-See `LICENSE.md` for additional information.
+See [LICENSE.md](LICENSE.md) for additional information.
 
 
 ## References
