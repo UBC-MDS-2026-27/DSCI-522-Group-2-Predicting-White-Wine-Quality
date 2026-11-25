@@ -1,7 +1,9 @@
 ---
 title: "Predicting White Wine Quality"
 author: "Ivan Tse, Nidhi Danda, Weizhuo Zhang, Alice Zhang"
-format: html
+format:
+  html:
+    embed-resources: true
 jupyter: python3
 ---
 # Summary
