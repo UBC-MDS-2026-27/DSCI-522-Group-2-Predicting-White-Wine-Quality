@@ -49,7 +49,7 @@ docker compose pull
 
 ### 3. Run the analysis and render the report
 ```bash
-docker compose run --rm analysis-env uv run quarto render
+docker compose run --rm analysis-env uv run quarto render analysis/white-wine-quality.qmd
 ```
 
 Rendering runs the whole analysis from scratch: it downloads the data again from the UCI Machine Learning Repository (so you need an internet connection), and overwrites the files in white-wine-quality_files. The rendered report is written to analysis/white-wine-quality.html, replacing the versions in this repository. Because of --rm, the container is removed by itself when the render finishes, so there is nothing to stop afterwards.
